@@ -31,7 +31,7 @@ jobs:
         env:
           SERVER_IP: 54.164.132.245
           SSH_USER: ec2-user
-          DEPLOY_DIR: var/www/html
+          DEPLOY_DIR: /var/www/html
 
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
@@ -39,6 +39,6 @@ jobs:
           # scp -i private_key.pem -o StrictHostKeyChecking=no -r dist/sample-pwa/* $SSH_USER@$SERVER_IP:$DEPLOY_DIR
           # ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP "sudo systemctl restart httpd"
 
-          scp -i private_key.pem -o StrictHostKeyChecking=no -r dist/sample-pwa/* $SSH_USER@$SERVER_IP:/home/$SSH_USER/$DEPLOY_DIR
-          ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP "sudo cp -r /home/$SSH_USER/$DEPLOY_DIR/* /var/www/html/ && sudo rm -rf /home/$SSH_USER/$DEPLOY_DIR"
+          scp -i private_key.pem -o StrictHostKeyChecking=no -r dist/sample-pwa/* $SSH_USER@$SERVER_IP:$DEPLOY_DIR
+          ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP "sudo cp -r $DEPLOY_DIR/* /var/www/html/ && sudo rm -rf $DEPLOY_DIR"
           ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP "sudo systemctl restart httpd"
