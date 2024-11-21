@@ -31,7 +31,7 @@ jobs:
         env:
           SERVER_IP: 54.164.132.245
           SSH_USER: ec2-user
-          DEPLOY_DIR: /var/www/html
+          DEPLOY_DIR: var/www/html
 
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
