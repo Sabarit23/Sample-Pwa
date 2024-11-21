@@ -36,5 +36,9 @@ jobs:
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
           chmod 600 private_key.pem
-          scp -i private_key.pem -o StrictHostKeyChecking=no -r dist/sample-pwa/* $SSH_USER@$SERVER_IP:$DEPLOY_DIR
+          # scp -i private_key.pem -o StrictHostKeyChecking=no -r dist/sample-pwa/* $SSH_USER@$SERVER_IP:$DEPLOY_DIR
+          # ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP "sudo systemctl restart httpd"
+
+          scp -i private_key.pem -o StrictHostKeyChecking=no -r dist/sample-pwa/* $SSH_USER@$SERVER_IP:/home/$SSH_USER/$DEPLOY_DIR
+          ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP "sudo cp -r /home/$SSH_USER/$DEPLOY_DIR/* /var/www/html/ && sudo rm -rf /home/$SSH_USER/$DEPLOY_DIR"
           ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP "sudo systemctl restart httpd"
