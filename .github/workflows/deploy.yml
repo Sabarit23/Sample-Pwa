@@ -37,7 +37,13 @@ jobs:
 
           # Backup the current deployed version
           ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
-            date = date
+
+            # Get the current date and store it in a variable
+            DATE=$(date +'%Y-%m-%d %H:%M:%S')
+
+            # Display the date
+            echo "The current date and time is: $DATE"
+
             sudo cp -r $DEPLOY_DIR /home/$SSH_USER/backup_$date
             sudo tar -czf /home/$SSH_USER/backup_$date.tar.gz -C /home/$SSH_USER backup_$date
           EOF
