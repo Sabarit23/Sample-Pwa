@@ -37,8 +37,9 @@ jobs:
 
           # Backup the current deployed version
           ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
-            sudo cp -r $DEPLOY_DIR /home/$SSH_USER/backup_date
-            sudo tar -czf /home/$SSH_USER/backup_date.tar.gz -C /home/$SSH_USER backup_date
+            date = date
+            sudo cp -r $DEPLOY_DIR /home/$SSH_USER/backup_$date
+            sudo tar -czf /home/$SSH_USER/backup_$date.tar.gz -C /home/$SSH_USER backup_$date
           EOF
 
           # Clean up private key
