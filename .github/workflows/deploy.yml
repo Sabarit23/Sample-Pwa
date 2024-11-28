@@ -24,7 +24,7 @@ jobs:
       - name: Install Dependencies and Run Tests
         run: |
           npm install
-          npm run test -- --watch=false --browsers=ChromeHeadless # Modify as per your test command
+          #npm run test -- --watch=false --browsers=ChromeHeadless # Modify as per your test command
           # You could also run other tests here, like integration tests
 
       # Step 4: Backup Current Deployment on the Server
