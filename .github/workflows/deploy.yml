@@ -37,10 +37,8 @@ jobs:
 
           # Backup the current deployed version
           ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
-            TIMESTAMP=$(date +'%Y-%m-%d %H:%M:%S')
-            echo $TIMESTAMP
-            sudo cp -r $DEPLOY_DIR /home/$SSH_USER/backup_$TIMESTAMP
-            sudo tar -czf /home/$SSH_USER/backup_$TIMESTAMP.tar.gz -C /home/$SSH_USER backup_$TIMESTAMP
+            sudo cp -r $DEPLOY_DIR /home/$SSH_USER/backup_date
+            sudo tar -czf /home/$SSH_USER/backup_date.tar.gz -C /home/$SSH_USER backup_date
           EOF
 
           # Clean up private key
