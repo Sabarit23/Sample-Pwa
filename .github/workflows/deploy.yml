@@ -20,10 +20,10 @@ jobs:
         with:
           node-version: 16
 
-      # # Step 3: Install Dependencies
-      # - name: Install Dependencies and Run Tests
-      #   run: |
-      #     npm install
+      # Step 3: Install Dependencies
+      - name: Install Dependencies and Run Tests
+        run: |
+          npm install
 
       # Step 4: Backup Current Deployment on the Server
       - name: Backup Current Deployment
@@ -37,31 +37,24 @@ jobs:
 
           # Backup the current deployed version
           ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
-
-            # Get the current date and store it in a variable
-            DATE=$(date +'%Y-%m-%d %H:%M:%S')
-
-            # Display the date
-            echo "The current date and time is: $DATE"
-
-            sudo cp -r $DEPLOY_DIR /home/$SSH_USER/backup_$date
-            sudo tar -czf /home/$SSH_USER/backup_$date.tar.gz -C /home/$SSH_USER backup_$date
+            sudo cp -r $DEPLOY_DIR /home/$SSH_USER/backup
+            sudo tar -czf /home/$SSH_USER/backup.tar.gz -C /home/$SSH_USER backup
           EOF
 
           # Clean up private key
           rm private_key.pem
 
-      # # Step 5: Build the Application
-      # - name: Build Application
-      #   run: |
-      #     npm run build --prod
-      #     tar -czf dist.tar.gz -C dist/sample-pwa .
+      # Step 5: Build the Application
+      - name: Build Application
+        run: |
+          npm run build --prod
+          tar -czf dist.tar.gz -C dist/sample-pwa .
 
-      # # Step 6: Run Tests After Build
-      # - name: Run Tests After Build
-      #   run: |
-      #     # Run your tests again to verify the build works as expected
-      #     npm run test -- --watch=false --browsers=ChromeHeadless # Modify as per your test command
+      # Step 6: Run Tests After Build
+      - name: Run Tests After Build
+        run: |
+          # Run your tests again to verify the build works as expected
+          # npm run test -- --watch=false --browsers=ChromeHeadless # Modify as per your test command
 
       # # Step 7: Deploy to AWS EC2 if Tests Pass
       # - name: Deploy to EC2
