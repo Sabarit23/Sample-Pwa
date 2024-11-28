@@ -20,39 +20,86 @@ jobs:
         with:
           node-version: 16
 
-      # Step 3: Install Dependencies and Build
-      - name: Install and Build
+      # Step 3: Install Dependencies and Run Tests
+      - name: Install Dependencies and Run Tests
         run: |
           npm install
-          npm run build --prod
-          tar -czf dist.tar.gz -C dist/sample-pwa .
+          npm run test -- --watch=false --browsers=ChromeHeadless # Modify as per your test command
+          # You could also run other tests here, like integration tests
 
-      # Step 4: Deploy to AWS EC2.
-      - name: Deploy to EC2
+      # Step 4: Backup Current Deployment on the Server
+      - name: Backup Current Deployment
         env:
           SERVER_IP: 54.91.212.151
           SSH_USER: ec2-user
           DEPLOY_DIR: /var/www/html
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
 
+          # Backup the current deployed version
+          ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
+            TIMESTAMP=$(date +'%Y%m%d%H%M%S')
+            sudo cp -r $DEPLOY_DIR /home/$SSH_USER/backup_$TIMESTAMP
+            sudo tar -czf /home/$SSH_USER/backup_$TIMESTAMP.tar.gz -C /home/$SSH_USER backup_$TIMESTAMP
+          EOF
+
+          # Clean up private key
+          rm private_key.pem
+
+      # Step 5: Build the Application
+      - name: Build Application
+        run: |
+          npm run build --prod
+          tar -czf dist.tar.gz -C dist/sample-pwa .
+
+      # Step 6: Run Tests After Build
+      - name: Run Tests After Build
+        run: |
+          # Run your tests again to verify the build works as expected
+          npm run test -- --watch=false --browsers=ChromeHeadless # Modify as per your test command
+
+      # Step 7: Deploy to AWS EC2 if Tests Pass
+      - name: Deploy to EC2
+        env:
+          SERVER_IP: 54.164.132.245
+          SSH_USER: ec2-user
+          DEPLOY_DIR: /var/www/html
         run: |
           set -e
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
           chmod 600 private_key.pem
 
-          # Upload build archive
-          scp -i private_key.pem -o StrictHostKeyChecking=no dist.tar.gz $SSH_USER@$SERVER_IP:/home/$SSH_USER
+          # If the tests passed, deploy the build
+          if [ $? -eq 0 ]; then
+            # Upload build archive
+            scp -i private_key.pem -o StrictHostKeyChecking=no dist.tar.gz $SSH_USER@$SERVER_IP:/home/$SSH_USER
 
-          # Extract and deploy on the server
-          ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
-            sudo rm -rf $DEPLOY_DIR/*
-            sudo tar -xzf /home/$SSH_USER/dist.tar.gz -C $DEPLOY_DIR
-            sudo chown -R apache:apache $DEPLOY_DIR
-            sudo chmod -R 755 $DEPLOY_DIR
-            sudo rm -f /home/$SSH_USER/dist.tar.gz
-            sudo systemctl restart httpd
-          EOF
+            # Extract and deploy on the server
+            ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
+              sudo rm -rf $DEPLOY_DIR/*
+              sudo tar -xzf /home/$SSH_USER/dist.tar.gz -C $DEPLOY_DIR
+              sudo chown -R apache:apache $DEPLOY_DIR
+              sudo chmod -R 755 $DEPLOY_DIR
+              sudo rm -f /home/$SSH_USER/dist.tar.gz
+              sudo systemctl restart httpd
+            EOF
+          else
+            # If tests failed, restore from the backup
+            ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
+              LATEST_BACKUP=$(ls -t /home/$SSH_USER/backup_*.tar.gz | head -n 1)
+              if [ -n "$LATEST_BACKUP" ]; then
+                sudo tar -xzf $LATEST_BACKUP -C $DEPLOY_DIR
+                sudo chown -R apache:apache $DEPLOY_DIR
+                sudo chmod -R 755 $DEPLOY_DIR
+                sudo systemctl restart httpd
+              else
+                echo "No backup found, manual intervention needed."
+              fi
+            EOF
+          fi
 
-          # Clean up
+          # Clean up private key
           rm private_key.pem
 
 # name: Build and Deploy Angular Application
@@ -77,84 +124,37 @@ jobs:
 #         with:
 #           node-version: 16
 
-#       # Step 3: Install Dependencies and Run Tests
-#       - name: Install Dependencies and Run Tests
+#       # Step 3: Install Dependencies and Build
+#       - name: Install and Build
 #         run: |
 #           npm install
-#           npm run test -- --watch=false --browsers=ChromeHeadless # Modify as per your test command
-#           # You could also run other tests here, like integration tests
+#           npm run build --prod
+#           tar -czf dist.tar.gz -C dist/sample-pwa .
 
-#       # Step 4: Backup Current Deployment on the Server
-#       - name: Backup Current Deployment
+#       # Step 4: Deploy to AWS EC2.
+#       - name: Deploy to EC2
 #         env:
 #           SERVER_IP: 54.91.212.151
 #           SSH_USER: ec2-user
 #           DEPLOY_DIR: /var/www/html
-#         run: |
-#           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
-#           chmod 600 private_key.pem
 
-#           # Backup the current deployed version
-#           ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
-#             TIMESTAMP=$(date +'%Y%m%d%H%M%S')
-#             sudo cp -r $DEPLOY_DIR /home/$SSH_USER/backup_$TIMESTAMP
-#             sudo tar -czf /home/$SSH_USER/backup_$TIMESTAMP.tar.gz -C /home/$SSH_USER backup_$TIMESTAMP
-#           EOF
-
-#           # Clean up private key
-#           rm private_key.pem
-
-#       # Step 5: Build the Application
-#       - name: Build Application
-#         run: |
-#           npm run build --prod
-#           tar -czf dist.tar.gz -C dist/sample-pwa .
-
-#       # Step 6: Run Tests After Build
-#       - name: Run Tests After Build
-#         run: |
-#           # Run your tests again to verify the build works as expected
-#           npm run test -- --watch=false --browsers=ChromeHeadless # Modify as per your test command
-
-#       # Step 7: Deploy to AWS EC2 if Tests Pass
-#       - name: Deploy to EC2
-#         env:
-#           SERVER_IP: 54.164.132.245
-#           SSH_USER: ec2-user
-#           DEPLOY_DIR: /var/www/html
 #         run: |
 #           set -e
 #           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
 #           chmod 600 private_key.pem
 
-#           # If the tests passed, deploy the build
-#           if [ $? -eq 0 ]; then
-#             # Upload build archive
-#             scp -i private_key.pem -o StrictHostKeyChecking=no dist.tar.gz $SSH_USER@$SERVER_IP:/home/$SSH_USER
+#           # Upload build archive
+#           scp -i private_key.pem -o StrictHostKeyChecking=no dist.tar.gz $SSH_USER@$SERVER_IP:/home/$SSH_USER
 
-#             # Extract and deploy on the server
-#             ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
-#               sudo rm -rf $DEPLOY_DIR/*
-#               sudo tar -xzf /home/$SSH_USER/dist.tar.gz -C $DEPLOY_DIR
-#               sudo chown -R apache:apache $DEPLOY_DIR
-#               sudo chmod -R 755 $DEPLOY_DIR
-#               sudo rm -f /home/$SSH_USER/dist.tar.gz
-#               sudo systemctl restart httpd
-#             EOF
-#           else
-#             # If tests failed, restore from the backup
-#             ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
-#               LATEST_BACKUP=$(ls -t /home/$SSH_USER/backup_*.tar.gz | head -n 1)
-#               if [ -n "$LATEST_BACKUP" ]; then
-#                 sudo tar -xzf $LATEST_BACKUP -C $DEPLOY_DIR
-#                 sudo chown -R apache:apache $DEPLOY_DIR
-#                 sudo chmod -R 755 $DEPLOY_DIR
-#                 sudo systemctl restart httpd
-#               else
-#                 echo "No backup found, manual intervention needed."
-#               fi
-#             EOF
-#           fi
+#           # Extract and deploy on the server
+#           ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
+#             sudo rm -rf $DEPLOY_DIR/*
+#             sudo tar -xzf /home/$SSH_USER/dist.tar.gz -C $DEPLOY_DIR
+#             sudo chown -R apache:apache $DEPLOY_DIR
+#             sudo chmod -R 755 $DEPLOY_DIR
+#             sudo rm -f /home/$SSH_USER/dist.tar.gz
+#             sudo systemctl restart httpd
+#           EOF
 
-#           # Clean up private key
+#           # Clean up
 #           rm private_key.pem
