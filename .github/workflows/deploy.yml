@@ -56,8 +56,8 @@ jobs:
           # Run your tests again to verify the build works as expected
           # npm run test -- --watch=false --browsers=ChromeHeadless # Modify as per your test command
 
-      # # Step 7: Deploy to AWS EC2 if Tests Pass
-      # - name: Deploy to EC2
+      # Step 7: Deploy to AWS EC2 if Tests Pass
+      - name: Deploy to EC2
       #   env:
       #     SERVER_IP: 54.164.132.245
       #     SSH_USER: ec2-user
@@ -98,7 +98,6 @@ jobs:
 
       #     # Clean up private key
       #     rm private_key.pem
-
 # name: Build and Deploy Angular Application
 
 # on:
