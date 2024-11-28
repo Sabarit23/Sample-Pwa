@@ -20,12 +20,10 @@ jobs:
         with:
           node-version: 16
 
-      # Step 3: Install Dependencies and Run Tests
+      # Step 3: Install Dependencies
       - name: Install Dependencies and Run Tests
         run: |
           npm install
-          #npm run test -- --watch=false --browsers=ChromeHeadless # Modify as per your test command
-          # You could also run other tests here, like integration tests
 
       # Step 4: Backup Current Deployment on the Server
       - name: Backup Current Deployment
@@ -39,7 +37,7 @@ jobs:
 
           # Backup the current deployed version
           ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
-            TIMESTAMP=$(date +'%Y%m%d%H%M%S')
+            TIMESTAMP=\$(date +'%Y%m%d%H%M%S')
             sudo cp -r $DEPLOY_DIR /home/$SSH_USER/backup_$TIMESTAMP
             sudo tar -czf /home/$SSH_USER/backup_$TIMESTAMP.tar.gz -C /home/$SSH_USER backup_$TIMESTAMP
           EOF
