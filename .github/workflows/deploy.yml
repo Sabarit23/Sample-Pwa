@@ -28,7 +28,7 @@ jobs:
       # Step 4: Backup Current Deployment on the Server
       - name: Backup Current Deployment
         env:
-          SERVER_IP: 54.91.212.151
+          SERVER_IP: 44.204.147.111
           SSH_USER: ec2-user
           DEPLOY_DIR: /var/www/html
         run: |
