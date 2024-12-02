@@ -24,7 +24,7 @@ jobs:
       - name: Install Dependencies
         run: |
           npm install
-          # npm run test
+          npm run test
           # npm run build --prod
           # tar -czf dist.tar.gz -C dist/sample-pwa .
 
