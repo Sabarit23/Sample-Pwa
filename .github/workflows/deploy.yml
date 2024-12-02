@@ -38,8 +38,8 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
           chmod 600 private_key.pem
 
-          # # Backup the current deployed version
-          # ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
+          # Backup the current deployed version
+          ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
           #   sudo tar -czf /home/$SSH_USER/backup.tar.gz -C /home/$SSH_USER backup
           #   sudo tar -xzf /home/$SSH_USER/backup.tar.gz -C /home/$SSH_USER backup
           # EOF
