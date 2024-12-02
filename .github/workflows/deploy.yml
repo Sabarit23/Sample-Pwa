@@ -28,24 +28,24 @@ jobs:
           npm run build --prod
           tar -czf dist.tar.gz -C dist/sample-pwa .
 
-      # # Step 4: Backup Current Deployment on the Server
-      # - name: Backup Current Deployment
-      #   env:
-      #     SERVER_IP: 3.95.219.110
-      #     SSH_USER: ec2-user
-      #     DEPLOY_DIR: /var/www/html
-      #   run: |
-      #     echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
-      #     chmod 600 private_key.pem
+      # Step 4: Backup Current Deployment on the Server
+      - name: Backup Current Deployment
+        env:
+          SERVER_IP: 3.95.219.110
+          SSH_USER: ec2-user
+          DEPLOY_DIR: /var/www/html
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
 
-      #     # Backup the current deployed version
-      #     ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
-      #       sudo tar -czf /home/$SSH_USER/backup.tar.gz -C /home/$SSH_USER backup
-      #       sudo tar -xzf /home/$SSH_USER/backup.tar.gz -C /home/$SSH_USER backup
-      #     EOF
+          # Backup the current deployed version
+          ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
+            sudo tar -czf /home/$SSH_USER/backup.tar.gz -C /home/$SSH_USER backup
+            sudo tar -xzf /home/$SSH_USER/backup.tar.gz -C /home/$SSH_USER backup
+          EOF
 
-      #     # Clean up private key
-      #     rm private_key.pem
+          # Clean up private key
+          rm private_key.pem
 
       # Step 4: Deploy to AWS EC2.
       - name: Deploy to EC2
