@@ -28,7 +28,7 @@ jobs:
           npm run build --prod
           tar -czf dist.tar.gz -C dist/sample-pwa .
 
-            # Step 4: Backup Current Deployment on the Server
+      # Step 4: Backup Current Deployment on the Server
       - name: Backup Current Deployment
         env:
           SERVER_IP: 3.95.219.110
@@ -40,7 +40,6 @@ jobs:
 
           # Backup the current deployed version
           ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
-            sudo cp -r $DEPLOY_DIR /home/$SSH_USER/backup
             sudo tar -czf /home/$SSH_USER/backup.tar.gz -C /home/$SSH_USER backup
           EOF
 
