@@ -24,37 +24,37 @@ jobs:
       - name: Install Dependencies
         run: |
           npm install
-          npm run test
-          npm run build --prod
-          tar -czf dist.tar.gz -C dist/sample-pwa .
+          # npm run test
+          # npm run build --prod
+          # tar -czf dist.tar.gz -C dist/sample-pwa .
 
-      # Step 4: Deploy to AWS EC2.
-      - name: Deploy to EC2
-        env:
-          SERVER_IP: 3.95.219.110
-          SSH_USER: ec2-user
-          DEPLOY_DIR: /var/www/html
+      # # Step 4: Deploy to AWS EC2.
+      # - name: Deploy to EC2
+      #   env:
+      #     SERVER_IP: 3.95.219.110
+      #     SSH_USER: ec2-user
+      #     DEPLOY_DIR: /var/www/html
 
-        run: |
-          set -e
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
-          chmod 600 private_key.pem
+      #   run: |
+      #     set -e
+      #     echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
+      #     chmod 600 private_key.pem
 
-          # Upload build archive
-          scp -i private_key.pem -o StrictHostKeyChecking=no dist.tar.gz $SSH_USER@$SERVER_IP:/home/$SSH_USER
+      #     # Upload build archive
+      #     scp -i private_key.pem -o StrictHostKeyChecking=no dist.tar.gz $SSH_USER@$SERVER_IP:/home/$SSH_USER
 
-          # Extract and deploy on the server
-          ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
-            sudo rm -rf $DEPLOY_DIR/*
-            sudo tar -xzf /home/$SSH_USER/dist.tar.gz -C $DEPLOY_DIR
-            sudo chown -R apache:apache $DEPLOY_DIR
-            sudo chmod -R 755 $DEPLOY_DIR
-            sudo rm -f /home/$SSH_USER/dist.tar.gz
-            sudo systemctl restart httpd
-          EOF
+      #     # Extract and deploy on the server
+      #     ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
+      #       sudo rm -rf $DEPLOY_DIR/*
+      #       sudo tar -xzf /home/$SSH_USER/dist.tar.gz -C $DEPLOY_DIR
+      #       sudo chown -R apache:apache $DEPLOY_DIR
+      #       sudo chmod -R 755 $DEPLOY_DIR
+      #       sudo rm -f /home/$SSH_USER/dist.tar.gz
+      #       sudo systemctl restart httpd
+      #     EOF
 
-          # Clean up
-          rm private_key.pem
+      #     # Clean up
+      #     rm private_key.pem
 
       # # Step 4: Backup Current Deployment on the Server
       # - name: Backup Current Deployment
