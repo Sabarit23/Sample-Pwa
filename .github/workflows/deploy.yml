@@ -40,7 +40,7 @@ jobs:
 
           # Backup the current deployed version
           ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
-          #   sudo tar -czf /home/$SSH_USER/backup.tar.gz -C /home/$SSH_USER backup
+            sudo tar -czf /home/$SSH_USER/backup.tar.gz -C /home/$SSH_USER backup
           #   sudo tar -xzf /home/$SSH_USER/backup.tar.gz -C /home/$SSH_USER backup
           # EOF
 
