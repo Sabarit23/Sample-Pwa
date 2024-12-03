@@ -50,6 +50,7 @@ jobs:
 
           # Backup the current deployed version
           ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
+            sudo mv -f /home/$SSH_USER/backup /home/$SSH_USER/MOVE
             sudo cp -r $DEPLOY_DIR /home/$SSH_USER/backup
             sudo tar -czf /home/$SSH_USER/backup.tar.gz -C /home/$SSH_USER backup
           EOF
