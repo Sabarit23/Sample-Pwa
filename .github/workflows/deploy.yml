@@ -153,16 +153,16 @@ jobs:
           # Clean up
           rm private_key.pem
 
-      # # Step 11: Rollback to Previous Version (If Tests Failed)
-      # - name: Rollback Deployment (If Tests Failed)
-      #   if: failure() # This step only runs if the tests fail
-      #   env:
-      #     SERVER_IP: 54.234.56.78 # Server 2 IP
-      #     SSH_USER: ec2-user
-      #     DEPLOY_DIR: /var/www/html
-      #   run: |
-      #     echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
-      #     chmod 600 private_key.pem
+      # Step 11: Rollback to Previous Version (If Tests Failed)
+      - name: Rollback Deployment (If Tests Failed)
+        if: failure() # This step only runs if the tests fail
+        env:
+          SERVER_IP: 54.234.56.78 # Server 2 IP
+          SSH_USER: ec2-user
+          DEPLOY_DIR: /var/www/html
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
 
       #     # Rollback to previous backup on Server 2
       #     ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
