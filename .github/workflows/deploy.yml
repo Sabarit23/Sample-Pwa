@@ -129,7 +129,7 @@ jobs:
       - name: Deploy to Server 1
         if: success() # Runs only if the previous steps succeeded
         env:
-          SERVER_IP: 54.198.217.192 # Server 1 IP
+          SERVER_IP: 3.89.155.31 # Server 1 IP
           SSH_USER: ec2-user
           DEPLOY_DIR: /var/www/html
         run: |
