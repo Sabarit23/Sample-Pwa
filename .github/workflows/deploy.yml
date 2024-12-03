@@ -125,33 +125,33 @@ jobs:
           # Clean up private key
           rm private_key.pem
 
-      # # Step 10: Deploy to Server 1 (High Load, 80%) - Only if Server 2 is fine
-      # - name: Deploy to Server 1
-      #   if: success() # Runs only if the previous steps succeeded
-      #   env:
-      #     SERVER_IP: 54.198.217.192 # Server 1 IP
-      #     SSH_USER: ec2-user
-      #     DEPLOY_DIR: /var/www/html
-      #   run: |
-      #     set -e
-      #     echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
-      #     chmod 600 private_key.pem
+      # Step 10: Deploy to Server 1 (High Load, 80%) - Only if Server 2 is fine
+      - name: Deploy to Server 1
+        if: success() # Runs only if the previous steps succeeded
+        env:
+          SERVER_IP: 54.198.217.192 # Server 1 IP
+          SSH_USER: ec2-user
+          DEPLOY_DIR: /var/www/html
+        run: |
+          set -e
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
 
-      #     # Upload build archive to Server 1
-      #     scp -i private_key.pem -o StrictHostKeyChecking=no dist.tar.gz $SSH_USER@$SERVER_IP:/home/$SSH_USER
+          # Upload build archive to Server 1
+          scp -i private_key.pem -o StrictHostKeyChecking=no dist.tar.gz $SSH_USER@$SERVER_IP:/home/$SSH_USER
 
-      #     # Extract and deploy on Server 1
-      #     ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
-      #       sudo rm -rf $DEPLOY_DIR/*
-      #       sudo tar -xzf /home/$SSH_USER/dist.tar.gz -C $DEPLOY_DIR
-      #       sudo chown -R apache:apache $DEPLOY_DIR
-      #       sudo chmod -R 755 $DEPLOY_DIR
-      #       sudo rm -f /home/$SSH_USER/dist.tar.gz
-      #       sudo systemctl restart httpd
-      #     EOF
+          # Extract and deploy on Server 1
+          ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
+            sudo rm -rf $DEPLOY_DIR/*
+            sudo tar -xzf /home/$SSH_USER/dist.tar.gz -C $DEPLOY_DIR
+            sudo chown -R apache:apache $DEPLOY_DIR
+            sudo chmod -R 755 $DEPLOY_DIR
+            sudo rm -f /home/$SSH_USER/dist.tar.gz
+            sudo systemctl restart httpd
+          EOF
 
-      #     # Clean up
-      #     rm private_key.pem
+          # Clean up
+          rm private_key.pem
 
       # # Step 11: Rollback to Previous Version (If Tests Failed)
       # - name: Rollback Deployment (If Tests Failed)
