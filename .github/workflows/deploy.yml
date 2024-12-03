@@ -29,7 +29,7 @@ jobs:
       - name: Run Tests
         id: test
         run: |
-          npm run test -- --watch=false --browsers=ChromeHeadless || exit 1
+          npm run testafc -- --watch=false --browsers=ChromeHeadless || exit 1
 
       # Step 5: If Tests Pass, Build the Application
       - name: Build Application
@@ -157,25 +157,25 @@ jobs:
       - name: Rollback Deployment (If Tests Failed)
         if: failure() # This step only runs if the tests fail
         env:
-          SERVER_IP: 54.234.56.78 # Server 2 IP
+          SERVER_IP: 54.234.96.159 # Server 2 IP
           SSH_USER: ec2-user
           DEPLOY_DIR: /var/www/html
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
           chmod 600 private_key.pem
 
-      #     # Rollback to previous backup on Server 2
-      #     ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
-      #       sudo rm -rf $DEPLOY_DIR/*
-      #       sudo tar -xzf /home/$SSH_USER/backup.tar.gz -C $DEPLOY_DIR
-      #       sudo chown -R apache:apache $DEPLOY_DIR
-      #       sudo chmod -R 755 $DEPLOY_DIR
-      #       sudo rm -f /home/$SSH_USER/backup.tar.gz
-      #       sudo systemctl restart httpd
-      #     EOF
+          # Rollback to previous backup on Server 2
+          ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
+            sudo rm -rf $DEPLOY_DIR/*
+            sudo tar -xzf /home/$SSH_USER/backup.tar.gz -C $DEPLOY_DIR
+            sudo chown -R apache:apache $DEPLOY_DIR
+            sudo chmod -R 755 $DEPLOY_DIR
+            sudo rm -f /home/$SSH_USER/backup.tar.gz
+            sudo systemctl restart httpd
+          EOF
 
-      #     # Clean up private key
-      #     rm private_key.pem
+          # Clean up private key
+          rm private_key.pem
 
 # name: Build and Deploy Angular Application
 
