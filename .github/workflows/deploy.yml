@@ -38,7 +38,7 @@ jobs:
           npm run build --prod
           tar -czf dist.tar.gz -C dist/sample-pwa .
 
-      # Step 6: Backup Current Deployment on the Server.
+      # Step 6: Backup Current Deployment on the Server
       - name: Backup Current Deployment
         env:
           SERVER_IP: 54.198.217.192
