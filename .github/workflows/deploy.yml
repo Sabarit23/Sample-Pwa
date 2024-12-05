@@ -110,7 +110,7 @@ jobs:
       - name: Backup Current Deployment on Server 1 - Only if Server 2 is fine
         if: success() # Runs if Server 2 deployment verification succeeded
         env:
-          SERVER_IP: 54.167.175.90 # Server 1 IP (80% load)
+          SERVER_IP: 52.207.137.140 # Server 1 IP (80% load)
           SSH_USER: ec2-user
           DEPLOY_DIR: /var/www/html
         run: |
@@ -131,7 +131,7 @@ jobs:
       - name: Deploy to Server 1
         if: success() # Runs only if the previous steps succeeded
         env:
-          SERVER_IP: 54.167.175.90 # Server 1 IP
+          SERVER_IP: 52.207.137.140 # Server 1 IP
           SSH_USER: ec2-user
           DEPLOY_DIR: /var/www/html
         run: |
