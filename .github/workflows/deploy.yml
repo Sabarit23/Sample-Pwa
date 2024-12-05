@@ -100,8 +100,8 @@ jobs:
           # Check if the web server is responding correctly
           ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
             # sudo systemctl stop httpd
-            # curl -f http://localhost || exit 1
-            curl -f http://localhost/nonexistentpage || exit 1
+            # curl -f http://localhost/nonexistentpage || exit 1
+            curl -f http://localhost || exit 1
           EOF
 
           # Clean up private key
@@ -176,7 +176,7 @@ jobs:
             # sudo tar -xzf /home/$SSH_USER/backup.tar.gz -C $DEPLOY_DIR
             sudo chown -R apache:apache $DEPLOY_DIR
             sudo chmod -R 755 $DEPLOY_DIR
-            sudo rm -f /home/$SSH_USER/backup.tar.gz
+            # sudo rm -f /home/$SSH_USER/backup.tar.gz
             sudo systemctl restart httpd
           EOF
 
