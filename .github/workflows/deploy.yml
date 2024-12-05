@@ -162,7 +162,7 @@ jobs:
       - name: Rollback Deployment (If Tests Failed)
         if: failure() # This step only runs if the tests fail
         env:
-          SERVER_IP: 3.88.105.70 # Server 2 IP
+          SERVER_IP: 18.204.215.60 # Server 2 IP
           SSH_USER: ec2-user
           DEPLOY_DIR: /var/www/html
         run: |
