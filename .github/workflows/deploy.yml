@@ -174,9 +174,9 @@ jobs:
             sudo rm -rf $DEPLOY_DIR/*
             sudo cp -r /home/$SSH_USER/backup/* $DEPLOY_DIR/
             # sudo tar -xzf /home/$SSH_USER/backup.tar.gz -C $DEPLOY_DIR
+            # sudo rm -f /home/$SSH_USER/backup.tar.gz
             sudo chown -R apache:apache $DEPLOY_DIR
             sudo chmod -R 755 $DEPLOY_DIR
-            # sudo rm -f /home/$SSH_USER/backup.tar.gz
             sudo systemctl restart httpd
           EOF
 
