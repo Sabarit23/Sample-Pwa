@@ -52,7 +52,6 @@ jobs:
           ssh -i private_key.pem -o StrictHostKeyChecking=no $SSH_USER@$SERVER_IP << EOF
             sudo rm -rf /home/$SSH_USER/move
             sudo mv /home/$SSH_USER/backup /home/$SSH_USER/move
-            # sudo mv -f /home/$SSH_USER/backup /home/$SSH_USER/move
             sudo cp -r $DEPLOY_DIR /home/$SSH_USER/backup
             sudo tar -czf /home/$SSH_USER/backup.tar.gz -C /home/$SSH_USER backup
           EOF
